@@ -1,0 +1,22 @@
+package com.doctors.backend.services;
+
+import com.doctors.backend.entity.Message;
+import com.doctors.backend.entity.Specialty;
+import com.doctors.backend.entity.User;
+
+import java.util.List;
+
+public interface DoctorService {
+
+    List<User> getDoctors();
+
+    User getDoctor(Long id);
+    User registerDoctor(User doctor);
+
+    User updatedDoctor(User doctor, Long id);
+    Boolean existsByEmail(String email);
+
+    List<Specialty> findAllSpecialties();
+
+    Message saveMessage(Message message, User user);
+}
