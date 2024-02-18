@@ -1,9 +1,6 @@
 package com.doctors.backend.controllers;
 
-import com.doctors.backend.entity.Message;
-import com.doctors.backend.entity.Specialty;
 import com.doctors.backend.entity.User;
-import com.doctors.backend.services.DoctorService;
 import com.doctors.backend.services.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,30 +25,24 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:4200")
-public class DoctorController {
+public class PatientController {
 
     @Autowired
-    private DoctorService doctorService;
+    private PatientService patientService;
 
-    @GetMapping("/doctors")
-    public List<User> getDoctors() {
-        return doctorService.getDoctors();
+    @GetMapping("/patient/{user_id}")
+    public User getUser(@PathVariable Long user_id){
+        return patientService.getUser(user_id);
     }
 
-    @GetMapping("/doctors/{id}")
-    public User getDoctor(@PathVariable Long id) {
-        return doctorService.getDoctor(id);
-    }
-
-
-    @PostMapping("/doctors")
-    public ResponseEntity<?> register(@Valid @RequestBody User doctor, BindingResult result) {
-        User newDoctor = null;
+    @PostMapping("/patient/register")
+    public ResponseEntity<?> registerPatient(@Valid @RequestBody User patient, BindingResult result){
+        User newPatient = null;
         Map<String, Object> response = new HashMap<>();
 
-        if (result.hasErrors()) {
+        if(result.hasErrors()){
             List<String> errors = new ArrayList<>();
-            for (FieldError err : result.getFieldErrors()) {
+            for(FieldError err: result.getFieldErrors()){
                 errors.add(err.getDefaultMessage());
             }
 
@@ -59,33 +50,32 @@ public class DoctorController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
-        if (doctorService.existsByEmail(doctor.getEmail())) {
+        if(patientService.existsByEmail(patient.getEmail())){
             response.put("error", "El email ya está en uso.");
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            newDoctor = doctorService.registerDoctor(doctor);
-        } catch (Exception e) {
-            response.put("message", "Error al realizar el insert en la base de datos.");
-            response.put("error", e.getMessage());
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("message", "El doctor se ha registrado con éxito.");
-        response.put("doctor", newDoctor);
+        try{
+            newPatient = patientService.registerPatient(patient);
+        }catch (Exception e){
+            response.put("error", "Error al realizar el registro del paciente.");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        response.put("message", "El paciente se ha registrado con éxito.");
+        response.put("patient", newPatient);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/doctors/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody User doctor, BindingResult result, @PathVariable Long id) {
-        User currentDoctor = doctorService.getDoctor(id);
-        User updatedDoctor = null;
+    @PutMapping("/patient/{user_id}")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User user, BindingResult result, @PathVariable Long user_id){
+        User currentUser = patientService.getUser(user_id);
+        User updatedUser = null;
         Map<String, Object> response = new HashMap<>();
 
-        if (result.hasErrors()) {
+        if(result.hasErrors()){
             List<String> errors = new ArrayList<>();
-            for (FieldError err : result.getFieldErrors()) {
+            for(FieldError err: result.getFieldErrors()){
                 errors.add(err.getDefaultMessage());
             }
 
@@ -93,37 +83,28 @@ public class DoctorController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
 
-        if (currentDoctor == null) {
-            response.put("message", "El doctor no existe en la base de datos.");
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        if(currentUser == null){
+            response.put("message", "El usuario no existe.");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        try {
-            updatedDoctor = doctorService.updatedDoctor(doctor, id);
-        } catch (Exception e) {
-            response.put("message", "Error al realizar la actualizacion en la base de datos.");
+        try{
+            updatedUser = patientService.updateUser(user, user_id);
+        }catch (Exception e){
+            response.put("message", "Error al actualizar al usuario en la base de datos.");
             response.put("error", e.getMessage());
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        response.put("message", "El doctor se ha actualizado con éxito.");
-        response.put("doctor", updatedDoctor);
+        response.put("message", "La informacion del usuario se ha actualizado con éxito.");
+        response.put("patient", updatedUser);
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
-
-    //specialties
-
-    @GetMapping("/doctors/specialties")
-    public List<Specialty> findAllSpecialties() {
-        return doctorService.findAllSpecialties();
-    }
-
-    //upload image
-    @PostMapping("/doctors/upload")
+    @PostMapping("/patient/upload")
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("id") Long id) {
         Map<String, Object> response = new HashMap<>();
-        User doctor = doctorService.getDoctor(id);
+        User patient = patientService.getUser(id);
 
         if (!image.isEmpty()) {
             String imageName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename().replace(" ", "");
@@ -138,7 +119,7 @@ public class DoctorController {
             }
 
             //Validar si el cliente ya tiene una foto o no, si ya existe, eliminamos la foto anterior y actualizamos por la nueva
-            String namePreviousImage = doctor.getPhoto();
+            String namePreviousImage = patient.getPhoto();
 
             if (namePreviousImage != null && namePreviousImage.length() > 0) {
                 Path previousImageRoute = Paths.get("uploads").resolve(namePreviousImage).toAbsolutePath();
@@ -149,17 +130,17 @@ public class DoctorController {
                 }
             }
 
-            doctor.setPhoto(imageName);
-            doctorService.updatedDoctor(doctor, id);
+            patient.setPhoto(imageName);
+            patientService.updateUser(patient, id);
 
             response.put("message", "Se ha actualizado la imagen con éxito.");
-            response.put("doctor", doctor);
+            response.put("patient", patient);
         }
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/doctors/uploads/img/{imageName:.+}")
+    @GetMapping("/patient/uploads/img/{imageName:.+}")
     public ResponseEntity<Resource> viewImage(@PathVariable String imageName) {
 
         Path filePath = Paths.get("uploads").resolve(imageName).toAbsolutePath();
@@ -185,32 +166,5 @@ public class DoctorController {
         header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
 
         return new ResponseEntity<Resource>(recurso, header, HttpStatus.OK);
-    }
-
-    @PostMapping("/doctors/{user_id}")
-    public ResponseEntity<?> saveMessage(@Valid @RequestBody Message message, BindingResult result, @PathVariable Long user_id) {
-        User user = doctorService.getDoctor(user_id);
-        Map<String, Object> response = new HashMap<>();
-
-        if (result.hasErrors()) {
-            List<String> errors = new ArrayList<>();
-            for (FieldError err : result.getFieldErrors()) {
-                errors.add(err.getDefaultMessage());
-            }
-
-            response.put("errors", errors);
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        try {
-            doctorService.saveMessage(message, user);
-        } catch (Exception e) {
-            response.put("message", "Error al guardar el mensaje.");
-            response.put("error", e.getMessage());
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        response.put("message", "El mensaje se ha guardado con éxito.");
-        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 }

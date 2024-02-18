@@ -21,6 +21,12 @@ public class PatientServiceImpl implements PatientService {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    public User getUser(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
+
+
+    @Override
     public User registerPatient(User patient) {
         User newPatient = new User();
 
@@ -37,5 +43,16 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User updateUser(User user, Long id){
+        User updatedUser = userRepository.findById(id).orElse(null);
+
+        updatedUser.setFirstname(user.getFirstname());
+        updatedUser.setLastname(user.getLastname());
+        updatedUser.setEmail(user.getEmail());
+
+        return userRepository.save(updatedUser);
     }
 }

@@ -7,4 +7,8 @@ public interface PatientService {
     User registerPatient(User patient);
 
     Boolean existsByEmail(String email);
+
+    User getUser(Long id);
+
+    User updateUser(User user, Long id);
 }
