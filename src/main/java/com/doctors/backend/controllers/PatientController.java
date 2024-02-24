@@ -153,7 +153,7 @@ public class PatientController {
         }
 
         if (!recurso.exists() && !recurso.isReadable()) {
-            filePath = Paths.get("src/main/resources/static/images").resolve("user_icon.png").toAbsolutePath();
+            filePath = Paths.get("src/main/resources/static/images").resolve("user-icon.png").toAbsolutePath();
 
             try {
                 recurso = new UrlResource(filePath.toUri());

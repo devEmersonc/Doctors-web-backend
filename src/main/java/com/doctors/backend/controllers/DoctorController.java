@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,11 @@ public class DoctorController {
     @GetMapping("/doctors")
     public List<User> getDoctors() {
         return doctorService.getDoctors();
+    }
+
+    @GetMapping("/doctors/page/{page}")
+    public Page<User> getDoctors(@PathVariable Integer page){
+        return doctorService.findPages(PageRequest.of(page, 4));
     }
 
     @GetMapping("/doctors/{id}")

@@ -9,6 +9,8 @@ import com.doctors.backend.repositories.SpecialtyRepository;
 import com.doctors.backend.repositories.UserRepository;
 import com.doctors.backend.services.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class DoctorServiceImpl implements DoctorService {
         newDoctor.setEmail(doctor.getEmail());
         newDoctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
         newDoctor.setPhoto(doctor.getPhoto());
+        newDoctor.setPhone(doctor.getPhone());
         newDoctor.setSpecialty(doctor.getSpecialty());
         newDoctor.setRoles(roleRepo.findByName("ROLE_DOCTOR"));
 
@@ -65,6 +68,7 @@ public class DoctorServiceImpl implements DoctorService {
         updatedDoctor.setLastname(doctor.getLastname());
         updatedDoctor.setEmail(doctor.getEmail());
         updatedDoctor.setPhoto(doctor.getPhoto());
+        updatedDoctor.setPhone(doctor.getPhone());
         updatedDoctor.setSpecialty(doctor.getSpecialty());
 
         return doctorRepo.save(updatedDoctor);
@@ -96,5 +100,10 @@ public class DoctorServiceImpl implements DoctorService {
         newMessage.setUser(user);
 
         return messageRepository.save(newMessage);
+    }
+
+    @Override
+    public Page<User> findPages(Pageable pageable) {
+        return doctorRepo.findAll(pageable);
     }
 }

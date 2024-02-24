@@ -3,6 +3,8 @@ package com.doctors.backend.services;
 import com.doctors.backend.entity.Message;
 import com.doctors.backend.entity.Specialty;
 import com.doctors.backend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,4 +21,6 @@ public interface DoctorService {
     List<Specialty> findAllSpecialties();
 
     Message saveMessage(Message message, User user);
+
+    Page<User> findPages(Pageable pageable);
 }

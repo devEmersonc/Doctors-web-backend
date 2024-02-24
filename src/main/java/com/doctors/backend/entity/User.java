@@ -40,6 +40,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String phone;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialty_id")
     @JsonIgnoreProperties("users")
@@ -67,6 +69,14 @@ public class User implements UserDetails {
 
     public String getFirstname() {
         return firstname;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public void setFirstname(String firstname) {
