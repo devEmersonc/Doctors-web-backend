@@ -21,6 +21,4 @@ public interface DoctorService {
     List<Specialty> findAllSpecialties();
 
     Message saveMessage(Message message, User user);
-
-    Page<User> findPages(Pageable pageable);
 }

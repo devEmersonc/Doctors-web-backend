@@ -101,9 +101,4 @@ public class DoctorServiceImpl implements DoctorService {
 
         return messageRepository.save(newMessage);
     }
-
-    @Override
-    public Page<User> findPages(Pageable pageable) {
-        return doctorRepo.findAll(pageable);
-    }
 }

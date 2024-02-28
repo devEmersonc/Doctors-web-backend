@@ -40,11 +40,6 @@ public class DoctorController {
         return doctorService.getDoctors();
     }
 
-    @GetMapping("/doctors/page/{page}")
-    public Page<User> getDoctors(@PathVariable Integer page){
-        return doctorService.findPages(PageRequest.of(page, 4));
-    }
-
     @GetMapping("/doctors/{id}")
     public User getDoctor(@PathVariable Long id) {
         return doctorService.getDoctor(id);
