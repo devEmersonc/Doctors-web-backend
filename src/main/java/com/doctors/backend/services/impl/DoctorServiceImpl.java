@@ -54,6 +54,7 @@ public class DoctorServiceImpl implements DoctorService {
         newDoctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
         newDoctor.setPhoto(doctor.getPhoto());
         newDoctor.setPhone(doctor.getPhone());
+        newDoctor.setSex(doctor.getSex());
         newDoctor.setSpecialty(doctor.getSpecialty());
         newDoctor.setRoles(roleRepo.findByName("ROLE_DOCTOR"));
 

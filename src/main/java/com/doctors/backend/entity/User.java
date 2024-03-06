@@ -42,6 +42,8 @@ public class User implements UserDetails {
 
     private String phone;
 
+    private String sex;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialty_id")
     @JsonIgnoreProperties("users")
@@ -105,6 +107,14 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 
     @Override
