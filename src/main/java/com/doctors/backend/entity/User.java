@@ -1,6 +1,5 @@
 package com.doctors.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -44,10 +43,12 @@ public class User implements UserDetails {
 
     private String sex;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    private String specialty;
+
+    /*@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "specialty_id")
     @JsonIgnoreProperties("users")
-    private Specialty specialty;
+    private Specialty specialty;**/
 
     @JsonIgnoreProperties("users")
     @ManyToMany(fetch = FetchType.EAGER)
@@ -159,11 +160,19 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public Specialty getSpecialty() {
+    /*public Specialty getSpecialty() {
         return specialty;
     }
 
     public void setSpecialty(Specialty specialty) {
+        this.specialty = specialty;
+    }**/
+
+    public String getSpecialty() {
+        return specialty;
+    }
+
+    public void setSpecialty(String specialty) {
         this.specialty = specialty;
     }
 

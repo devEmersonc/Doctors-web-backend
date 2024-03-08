@@ -71,7 +71,6 @@ public class DoctorServiceImpl implements DoctorService {
         updatedDoctor.setPhoto(doctor.getPhoto());
         updatedDoctor.setPhone(doctor.getPhone());
         updatedDoctor.setSpecialty(doctor.getSpecialty());
-
         return doctorRepo.save(updatedDoctor);
     }
 
