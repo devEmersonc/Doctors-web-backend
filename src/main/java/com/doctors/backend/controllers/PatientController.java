@@ -3,6 +3,7 @@ package com.doctors.backend.controllers;
 import com.doctors.backend.entity.User;
 import com.doctors.backend.services.PatientService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -166,5 +167,37 @@ public class PatientController {
         header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"");
 
         return new ResponseEntity<Resource>(recurso, header, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/doctors/{id}")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id){
+        Map<String, Object> response = new HashMap<>();
+
+        try{
+            User patient = patientService.getUser(id);
+
+            if(patient != null){
+                String previousNamePhoto = patient.getPhoto();
+                if(previousNamePhoto != null && previousNamePhoto.length() > 0){
+                    Path previousPhotoRoute = Paths.get("uploads").resolve(previousNamePhoto).toAbsolutePath();
+                    File previousPhotoFile = previousPhotoRoute.toFile();
+
+                    if(previousPhotoFile.exists() && previousPhotoFile.canRead()){
+                        previousPhotoFile.delete();
+                    }
+                }
+
+                patientService.deletePatient(id);
+                response.put("message", "Se ha eliminado al paciente con éxito.");
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+            }
+
+            response.put("message", "El paciente no existe.");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }catch(Exception e){
+            response.put("message", "Error al eliminar al paciente");
+            response.put("error", e.getMessage());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

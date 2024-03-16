@@ -55,4 +55,9 @@ public class PatientServiceImpl implements PatientService {
 
         return userRepository.save(updatedUser);
     }
+
+    @Override
+    public void deletePatient(Long id) {
+        userRepository.deleteById(id);
+    }
 }

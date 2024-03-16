@@ -40,6 +40,12 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public Page<User> findAll(Pageable pageable) {
+        return doctorRepo.findAll(pageable);
+    }
+
+
+    @Override
     public User getDoctor(Long id){
         return doctorRepo.findById(id).orElse(null);
     }
@@ -100,5 +106,15 @@ public class DoctorServiceImpl implements DoctorService {
         newMessage.setUser(user);
 
         return messageRepository.save(newMessage);
+    }
+
+    @Override
+    public void deleteDoctor(Long id) {
+        doctorRepo.deleteById(id);
+    }
+
+    @Override
+    public User findByEmail(String email){
+        return doctorRepo.findByEmail(email);
     }
 }

@@ -12,6 +12,8 @@ public interface DoctorService {
 
     List<User> getDoctors();
 
+    Page<User> findAll(Pageable pageable);
+
     User getDoctor(Long id);
     User registerDoctor(User doctor);
 
@@ -21,4 +23,8 @@ public interface DoctorService {
     List<Specialty> findAllSpecialties();
 
     Message saveMessage(Message message, User user);
+
+    void deleteDoctor(Long id);
+
+    User findByEmail(String email);
 }

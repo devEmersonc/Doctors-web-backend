@@ -6,11 +6,13 @@ import com.doctors.backend.entity.User;
 import com.doctors.backend.services.DoctorService;
 import com.doctors.backend.services.PatientService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,11 +42,38 @@ public class DoctorController {
         return doctorService.getDoctors();
     }
 
+    @GetMapping("/doctors/page/{page}")
+    public Page<User> getDoctors(@PathVariable Integer page) {
+        return doctorService.findAll(PageRequest.of(page, 9));
+    }
+
+
     @GetMapping("/doctors/{id}")
     public User getDoctor(@PathVariable Long id) {
         return doctorService.getDoctor(id);
     }
 
+    @GetMapping("/doctors/email")
+    public ResponseEntity<?> findDoctorByEmail(@RequestParam(value = "email") String email){
+        User doctor = doctorService.findByEmail(email);
+
+        Map<String, Object> response = new HashMap<>();
+
+        if(doctor == null){
+            response.put("message", "Usuario no encontrado.");
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }
+
+        try{
+            doctorService.existsByEmail(doctor.getEmail());
+        }catch (Exception e){
+            response.put("message", "Error al realizar la consulta.");
+            response.put("error", e.getMessage());
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
 
     @PostMapping("/doctors")
     public ResponseEntity<?> register(@Valid @RequestBody User doctor, BindingResult result) {
